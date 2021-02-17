@@ -3,4 +3,3 @@ __pycache__
 bin
 lib
 pyvenv.cfg
-config.py
