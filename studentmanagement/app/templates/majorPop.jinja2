@@ -1,0 +1,103 @@
+{% extends "layout.jinja2" %}
+{% block title %}전공 세부사항{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<h3> {{major.full_name}} </h3>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  수정
+</button>
+<button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('delMajor', id=major.id) }}' ">
+  삭제
+</button>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">전공 생성</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+
+				<form action = "{{ url_for('editMajor', id=major.id) }}" method = "POST">
+					<div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="full_name">전공 이름:</label>
+						<input type="text" class="form-control" id="full_name" name="full_name" value="{{ major.full_name }}" required>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary">Save changes</button>
+					</div>
+				</form>
+
+			</div>
+
+
+		</div>
+	</div>
+</div>
+
+<h4> 교수 </h4>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">번호</th>
+      <th scope="col">교수</th>
+    </tr>
+  </thead>
+  <tbody>
+		{% for p, m in professors%}
+			 <tr style = "cursor:pointer;" onClick = " location.href='{{ url_for('getProf', id=p.id) }}' " >
+				<th scope="row">{{p.id}}</th>
+				<td>{{ p.full_name }} 교수</td>
+			</tr>
+		{% endfor %}
+  </tbody>
+</table>
+
+<h4> 학생 </h4>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">번호</th>
+      <th scope="col">학생</th>
+      <th scope="col">학년</th>
+    </tr>
+  </thead>
+  <tbody>
+		{% for s, m in students%}
+			<tr style = "cursor:pointer;" onClick = " location.href='{{ url_for('getStud', id=s.id) }}' " >
+				<th scope="row">{{s.id}}</th>
+				<td>{{ s.full_name }} 학생</td>
+				<td>{{ (s.semester / 2) | int  }}</td>
+			</tr>
+		{% endfor %}
+  </tbody>
+</table>
+
+
+<h4> 강의 </h4>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">번호</th>
+      <th scope="col">강의</th>
+    </tr>
+  </thead>
+  <tbody>
+		{% for l, m in lectures%}
+			<tr style = "cursor:pointer;" onClick = " location.href='{{ url_for('getLec', id=l.id) }}' " >
+				<th scope="row">{{l.id}}</th>
+				<td>{{ l.full_name }} </td>
+			</tr>
+		{% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

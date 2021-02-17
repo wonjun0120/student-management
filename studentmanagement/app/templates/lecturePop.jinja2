@@ -1,0 +1,192 @@
+{% extends "layout.jinja2" %}
+{% block title %}강의 세부사항{% endblock %}
+{% block head %}
+{{ super() }}
+<script>
+$(document).ready(function () {    
+	var allOptions = $('#professor option')
+	$('#major').change(function () {
+			$('#professor option').remove()
+			var classN = $('#major option:selected').prop('class');
+			var opts = allOptions.filter('.' + classN);
+			$.each(opts, function (i, j) {
+					$(j).appendTo('#professor');
+			});
+	});
+});
+</script>
+{% endblock %}
+{% block content %}
+<h3> {{lecture.full_name}} </h3>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  수정
+</button>
+<button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('delLec', id=lecture.id) }}' ">
+  삭제
+</button>
+
+<h4> 세부사항 </h4>
+<table class="table">
+  <tbody>
+		<tr>
+			<th scope="row">이름</th>
+			<td>{{ lecture.full_name }} </td>
+		</tr>
+		<tr>
+			<th scope="row">전공</th>
+			<td>{{ major.full_name }} </td>
+		</tr>
+		<tr>
+			<th scope="row">교수</th>
+			<td> <a href='{{ url_for('getProf', id=professor.id) }}'> {{ professor.full_name }} 교수 </a></td>
+		</tr>
+		<tr>
+			<th scope="row">장소</th>
+			<td>{{ lecture.place }} </td>
+		</tr>
+
+  </tbody>
+</table>
+
+<h4> 수강생 </h4>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addStudents">
+  수강생 추가
+</button>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">번호</th>
+      <th scope="col">학생</th>
+      <th scope="col">학년</th>
+      <th scope="col">학점</th>
+    </tr>
+  </thead>
+  <tbody>
+		{% set grades = ["A+","A","B+","B","C+","C","D+","D","F"] %}
+		{% for s, ls, l in students%}
+			<tr>
+				<th scope="row">{{s.id}}</th>
+				<td><a href = {{ url_for('getStud', id=s.id) }}>{{ s.full_name }} 학생</a></td>
+				<td>{{ (s.semester / 2) | int  }}</td>
+				<td>
+					<form action = "{{ url_for('changeGradeinLec', id=ls.id) }}" method = "POST">
+					<select name="grade" id="grade" name="grade" onchange="this.form.submit()" >
+              <option value="" class="rhth">학점 선택</option>
+							{% for g in grades%}
+								{%if g == ls.grade%}
+									<option value="{{g}}" selected> {{g}} </option>
+								{%else%}
+									<option value="{{g}}"> {{g}} </option>
+								{%endif%}
+							{% endfor %}
+          </select>
+					</form>
+				</td>
+				<td>
+          <button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('delStud2Lec', id=ls.id) }}' ">
+            삭제
+          </button>
+				</td>
+			</tr>
+		{% endfor %}
+  </tbody>
+</table>
+
+<div class="modal fade" id="addStudents" tabindex="-1" role="dialog" aria-labelledby="addStudents" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addStudents">수강생 추가</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+				<form action = "{{ url_for('addStud2Lec', id=lecture.id) }}" method = "POST">
+					<div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="students">수강생:</label>
+						<select id="students" name='students' multiple class="form-control"> 
+							<option selected>수강생을 선택하세요</option>
+							{% for s, m in maj_students%}
+								<option name='' value="{{s.id}}">{{s.full_name}}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary">Save changes</button>
+					</div>
+				</form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">강의 추가</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+
+				<form action = "{{ url_for('lecture') }}" method = "POST">
+					<div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="full_name">강의 이름:</label>
+						<input type="text" class="form-control" id="full_name" name="full_name" value={{lecture.full_name}} required>
+					</div>
+
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="major">전공:</label>
+						<select name="major" id="major" name="major">
+              <option value="" class="rhth">전공 선택</option>
+              {% for item in majors%}
+								{% if lecture.major == item.id %}
+									<option value = "{{ item.id }}" selected> {{ item.full_name }} </option>
+								{% else %}
+									<option value="{{ item.id }}" class="{{ item.id }}"> {{ item.full_name }} </option>
+								{% endif %}                
+	            {% endfor %}
+            </select>
+					</div>
+
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="professor">교수:</label>
+						<select name="professor" id="professor" name="professor" >
+              <option value="" class="rhth">교수 선택</option>
+							{% for item in professors%}
+								{% if lecture.professor == item.id %}
+									<option value="{{ item.id }}" class="selectors {{ item.major }}" selected> {{ item.full_name }} </option>
+								{% else %}
+									<option value="{{ item.id }}" class="selectors {{ item.major }}"> {{ item.full_name }} </option>
+								{% endif %}                
+	            {% endfor %}
+            </select>
+					</div>
+
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="place">위치:</label>
+						<input type="text" class="form-control" id="place" name="place" value={{lecture.place}} required>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary">Save changes</button>
+					</div>
+				</form>
+
+			</div>
+
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}

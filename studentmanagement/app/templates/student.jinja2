@@ -5,7 +5,131 @@
 {% endblock %}
 {% block content %}
     <h3>학생</h3>
-    
+    <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  학생 추가
+</button>
+<select id="select-major" class="custom-select" onchange="myFunction()" >
+  <option value = "-1"> 전체 </option>
+  {% for item in majors%}
+    <option value = "{{ item.id }}"> {{ item.full_name }} </option>
+	{% endfor %}
+</select>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">학생 추가</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+
+				<form action = "{{ url_for('student') }}" method = "POST">
+					<div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="full_name">학생 이름:</label>
+						<input type="text" class="form-control" id="full_name" name="full_name" required>
+					</div>
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="birth">생년월일:</label>
+						<input type="date" class="form-control" id="birth" name="birth" required>
+					</div>
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="phone">전화번호:</label>
+						<input type="tel" class="form-control" id="phone" name="phone" required>
+					</div>
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="email">이메일:</label>
+						<input type="email" class="form-control" id="email" name="email" required>
+					</div>
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="admission_date">입학날짜:</label>
+						<input type="date" class="form-control" id="admission_date" name="admission_date" required>
+					</div>
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="semester">학기:</label>
+						<input type="number" class="form-control" id="semester" name="semester" required>
+					</div>
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="major">전공:</label>
+						<select name="major" id="major" name="major">
+              {% for item in majors%}
+                <option value = "{{ item.id }}"> {{ item.full_name }} </option>
+	            {% endfor %}
+            </select>
+					</div>
+					
+
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary">Save changes</button>
+					</div>
+				</form>
+
+			</div>
+
+
+		</div>
+	</div>
+</div>
+
+<table class="table" id="student-table">
+  <thead>
+    <tr>
+      <th scope="col">번호</th>
+      <th scope="col">학생</th>
+      <th scope="col">전공</th>
+      <th scope="col">학기</th>
+    </tr>
+  </thead>
+  <tbody>
+		{% for s, m in students%}
+			<tr class="{{ m.id }}" >
+				<th scope="row">{{s.id}}</th>
+				<td>{{ s.full_name }} 학생</td>
+				<td>{{ m.full_name }}</td>
+				<td>{{ s.semester }}</td>
+				<td>
+          <button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('getStud', id=s.id) }}' ">
+            세부사항
+          </button>
+          &nbsp;&nbsp;
+          <button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('delStud', id=s.id) }}' ">
+            삭제
+          </button>
+        </td>
+			</tr>
+		{% endfor %}
+  </tbody>
+</table>
+
+<script>
+function myFunction() {
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("select-major");
+  filter = input.value
+  table = document.getElementById("student-table");
+  tr = table.getElementsByTagName("tr");
+  if(filter !== '-1'){
+    for (i = 0; i < tr.length; i++) {
+      if(tr[i].className == filter){
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      } 
+    }
+  } else {
+    for (i = 0; i < tr.length; i++) {
+      tr[i].style.display = "";
+    }
+  }
+}
+</script>
 {% endblock %}
 
 

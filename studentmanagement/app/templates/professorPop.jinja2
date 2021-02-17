@@ -1,0 +1,115 @@
+{% extends "layout.jinja2" %}
+{% block title %}교수 세부사항{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<h3> {{professor.full_name}} 교수</h3>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  수정
+</button>
+<button type="button" class="btn btn-primary" onclick="location.href='{{ url_for('delProf', id=professor.id) }}' ">
+  삭제
+</button>
+
+<h4> 세부사항 </h4>
+<table class="table">
+  <tbody>
+		<tr>
+			<th scope="row">이름</th>
+			<td>{{ professor.full_name }} </td>
+		</tr>
+		<tr>
+			<th scope="row">생년월일</th>
+			<td>{{ professor.birth }} </td>
+		</tr>
+		<tr>
+			<th scope="row">전화번호</th>
+			<td>{{ professor.phone }} </td>
+		</tr>
+		<tr>
+			<th scope="row">이메일</th>
+			<td>{{ professor.email }} </td>
+		</tr>
+		<tr>
+			<th scope="row">전공</th>
+			<td>{{ major.full_name }} </td>
+		</tr>
+
+  </tbody>
+</table>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">전공 생성</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+
+				<form action = "{{ url_for('editProf', id=professor.id) }}" method = "POST">
+					<div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="full_name">교수 이름:</label>
+						<input type="text" class="form-control" id="full_name" name="full_name" value="{{ professor.full_name }}" required>
+					</div>
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="birth">생년월일:</label>
+						<input type="date" class="form-control" id="birth" name="birth" value="{{ professor.birth }}" required>
+					</div>
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="phone">전화번호:</label>
+						<input type="tel" class="form-control" id="phone" name="phone" value="{{ professor.phone }}" required>
+					</div>
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="email">이메일:</label>
+						<input type="email" class="form-control" id="email" name="email" value="{{ professor.email }}" required>
+					</div>
+          <div class="form-group">
+						<label for="recipient-name" class="col-form-label" for="major">전공:</label>
+						<select name="major" id="major" name="major">
+              {% for item in majors%}
+								{% if professor.major == item.id %}
+									<option value = "{{ item.id }}" selected> {{ item.full_name }} </option>
+								{% else %}
+									<option value = "{{ item.id }}"> {{ item.full_name }} </option>
+								{% endif %}
+                
+	            {% endfor %}
+            </select>
+					</div>
+					
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary">Save changes</button>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<h4> 강의 </h4>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">번호</th>
+      <th scope="col">강의</th>
+    </tr>
+  </thead>
+  <tbody>
+		{% for l, m in lectures%}
+			<tr style = "cursor:pointer;" onClick = " location.href='{{ url_for('getLec', id=l.id) }}' " >
+				<th scope="row">{{l.id}}</th>
+				<td>{{ l.full_name }} </td>
+			</tr>
+		{% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
